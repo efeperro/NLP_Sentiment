@@ -1,6 +1,9 @@
-sklearn
-tensorflow
-nltk
-BeautifulSoup
-datasets
-textblob
+beautifulsoup4==4.12.3
+textblob==0.17.1
+pandas==1.5.3
+numpy==1.23.5
+scikit-learn==1.2.2
+tensorflow==2.15.0
+keras==2.15.0
+nltk==3.8.1
+datasets==2.16.1
