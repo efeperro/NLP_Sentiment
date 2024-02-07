@@ -1,31 +1,14 @@
 import streamlit as st 
-from functions_preprocess import LinguisticPreprocessor, download_if_non_existent, fit_model
+from functions_preprocess import LinguisticPreprocessor
 import pickle
-import string
-from bs4 import BeautifulSoup
-from textblob import TextBlob
-import re
-import nltk
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-from tensorflow.keras.preprocessing.text import Tokenizer
-from nltk.corpus import wordnet
-from nltk.stem import WordNetLemmatizer
-nltk.download("punkt")
-nltk.download('omw-1.4')
-nltk.download("wordnet")
-download_if_non_existent('corpora/stopwords', 'stopwords')
-download_if_non_existent('taggers/averaged_perceptron_tagger', 'averaged_perceptron_tagger')
-download_if_non_existent('corpora/wordnet', 'wordnet')
-
-
 
 
 #################################################################### Streamlit interface
 st.title("Movie Reviews: An NLP Sentiment analysis")
 
 st.markdown("### NLP Processing utilizing various ML approaches")
-st.markdown("This initial approach merges multiple datasets to predict a positive or negative sentiment of reviews.")
+st.markdown("##### This initial approach merges multiple datasets, processed through a TF-IDF vectorizer with 2 n-grams and fed into a Stochastic Gradient Descent model.")
+st.markdown("Give it a go by writing a positive or negative text, and analyze it!")
 
 
 #################################################################### Cache the model loading
@@ -52,14 +35,12 @@ if st.button('Analyze'):
     result = predict_sentiment(user_input, model)
     if result >= 0.5:
         st.write('The sentiment is: Positive 😀')
+
     else:
         st.write('The sentiment is: Negative 😞')
 
 
-st.caption("Made by @efeperro con mucho ❤️. Credits to 🤗")
+st.caption("Por @efeperro con ❤️. Credits to 🤗")
 
-
-############################################################### some global variables required
-lemmatizer = WordNetLemmatizer()
 tokenizer = Tokenizer()
 stop_words = set(stopwords.words('english'))
