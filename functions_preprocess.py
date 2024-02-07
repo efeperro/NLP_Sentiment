@@ -1,25 +1,15 @@
 
 import string
+import pandas as pd
 from bs4 import BeautifulSoup
-from textblob import TextBlob
 import re
 import numpy as np
-from sklearn.base import TransformerMixin, BaseEstimator
-from sklearn.model_selection import GridSearchCV
-from sklearn.linear_model import SGDClassifier
-from sklearn.pipeline import Pipeline
-from sklearn.metrics import classification_report, ConfusionMatrixDisplay
-from sklearn.feature_extraction.text import TfidfVectorizer, HashingVectorizer
-import tensorflow as tf
-from tensorflow.keras.preprocessing.text import Tokenizer
+from sklearn.base import TransformerMixin
+from sklearn.metrics import ConfusionMatrixDisplay
+from keras.preprocessing.text import Tokenizer
 import nltk
 from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
-from nltk.corpus import wordnet
 from nltk.stem import WordNetLemmatizer
-nltk.download("punkt")
-nltk.download('omw-1.4')
-nltk.download("wordnet")
 
 
 def download_if_non_existent(res_path, res_name):
@@ -84,6 +74,38 @@ class LinguisticPreprocessor(TransformerMixin):
   def _lemmatize(self, X):
     X = list(map(lambda text: self._lemmatize_one_sentence(text), X))
     return X
+
+  def _lemmatize_one_sentence(self, sentence):
+    sentence = nltk.word_tokenize(sentence)
+    sentence = list(map(lambda word: self.lemmatizer.lemmatize(word), sentence))
+    return " ".join(sentence)
+
+def training_data(dataset_1, dataset_2, dataset_3):
+  X_test = dataset_1['test']['text']
+  y_test = dataset_1['test']['label']
+
+  test_df = pd.DataFrame({
+      'text':X_test,
+      'label': y_test
+  })
+
+  combined_train_df = pd.DataFrame({
+      'text': dataset_1['train']['text'] + dataset_2['train']['text'] + dataset_3['train']['text'],
+      'label': dataset_1['train']['label'] + dataset_2['train']['label'] + dataset_3['train']['label']
+  })
+
+  combined_train_df.drop_duplicates(subset=['text'], inplace=True)
+
+  merged_df = pd.merge(combined_train_df, test_df, on="text", how='left', indicator=True)
+  result_df = merged_df[merged_df['_merge'] == 'left_only'].drop(columns=['_merge'])
+
+
+  X_train = result_df['text'].tolist()
+  y_train = result_df['label_x'].tolist()
+  X_test = np.array(X_test)
+  X_train = np.array(X_train)
+
+  return X_train, y_train, X_test, y_test
 
   def _lemmatize_one_sentence(self, sentence):
     sentence = nltk.word_tokenize(sentence)
