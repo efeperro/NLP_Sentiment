@@ -116,6 +116,6 @@ Although these scores seem to good to be true, similar metrics were encountered 
 
 
 ```bash
-git clone https://yourprojectlink.git
-cd yourprojectname
+git clone https://https://github.com/efeperro/NLP_Sentiment
+cd tree/main
 pip install -r requirements.txt
